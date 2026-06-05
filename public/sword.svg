@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke-linejoin="round">
+  <!-- Blade -->
+  <path d="M16 2 L23 10 L23 17 L16 21 L9 17 L9 10 Z" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>
+  <!-- Guard -->
+  <rect x="2" y="20" width="28" height="3" rx="1" fill="currentColor" opacity="1"/>
+  <!-- Inner fuller -->
+  <path d="M16 6 L20 11 L20 15 L16 18 L12 15 L12 11 Z" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+  <!-- Gem -->
+  <path d="M16 24 L18.5 26 L16 28 L13.5 26 Z" fill="currentColor" stroke="none"/>
+  <!-- Pommel -->
+  <circle cx="16" cy="30" r="1.5" fill="currentColor" stroke="none" opacity="0.6"/>
+</svg>

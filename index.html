@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adventure Log</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+      html, body { margin: 0; padding: 0; overflow: hidden; background: #070808; width: 100%; height: 100%; }
+
+      @keyframes pulseGlow {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 0.9; transform: scale(1.08); }
+      }
+
+      /* ── Splash ── */
+      #splash {
+        position: fixed; inset: 0; z-index: 9999;
+        display: flex;
+        align-items: center; justify-content: center;
+        gap: 48px;
+        background:
+          radial-gradient(ellipse 80% 55% at 50% 40%, rgba(230,196,99,0.06), transparent 60%),
+          #070808;
+        opacity: 0;
+        animation: splashIn 0.6s ease 0.1s forwards;
+      }
+      #splash.fade-out {
+        animation: splashOut 0.7s ease forwards;
+      }
+      @keyframes splashIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes splashOut {
+        from { opacity: 1; transform: scale(1); filter: brightness(1); }
+        to { opacity: 0; transform: scale(1.04); filter: brightness(1.4); }
+      }
+
+      /* Splash inner row */
+      #splash-inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      /* Light burst behind sword — amber (main quest), most prevalent */
+      #splash-burst {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 280px; height: 280px;
+        margin: -140px 0 0 -140px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(230,196,99,0.22), rgba(230,196,99,0.07) 35%, transparent 65%);
+        animation: burstIn 1.0s cubic-bezier(0.2, 0.9, 0.3, 1) 0.3s forwards, pulseGlow 2.2s ease-in-out 0.4s infinite;
+        opacity: 0;
+        transform: scale(0.4);
+      }
+      @keyframes burstIn {
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      /* Sword layers container */
+      #splash-sword {
+        position: relative;
+        flex: 0 0 auto;
+        z-index: 2;
+        opacity: 0;
+        animation: swordIn 1.0s cubic-bezier(0.2, 0.9, 0.3, 1) 0.35s forwards;
+      }
+      .sword-layer {
+        display: block;
+        width: 220px; height: 220px;
+        position: absolute;
+        inset: 0;
+      }
+      #sword-base { position: relative; }
+
+      @keyframes swordIn {
+        0% { opacity: 0; transform: scale(0.5) translateX(-20px); }
+        60% { opacity: 1; transform: scale(1.05) translateX(2px); }
+        100% { opacity: 1; transform: scale(1) translateX(0); }
+      }
+
+      /* Side text */
+      .splash-label {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 34px;
+        font-weight: 700;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        opacity: 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+      #splash-left {
+        color: #ece6d6;
+        text-shadow: 0 0 24px rgba(230,196,99,0.3), 0 0 60px rgba(230,196,99,0.1);
+        animation: leftIn 1.0s cubic-bezier(0.2, 0.9, 0.3, 1) 0.5s forwards;
+        margin-right: -40px;
+      }
+      #splash-right {
+        color: #ece6d6;
+        text-shadow: 0 0 24px rgba(230,196,99,0.3), 0 0 60px rgba(230,196,99,0.1);
+        animation: rightIn 1.0s cubic-bezier(0.2, 0.9, 0.3, 1) 0.5s forwards;
+        margin-left: -40px;
+      }
+      @keyframes leftIn {
+        0% { opacity: 0; transform: translateX(20px); }
+        100% { opacity: 1; transform: translateX(0); }
+      }
+      @keyframes rightIn {
+        0% { opacity: 0; transform: translateX(-20px); }
+        100% { opacity: 1; transform: translateX(0); }
+      }
+
+      /* Quest icons below — shrine / main / side */
+      #splash-quest-icons {
+        display: flex; gap: 10px; justify-content: center;
+        position: absolute;
+        bottom: -28px;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        animation: dotsIn 0.5s ease 1.3s forwards;
+      }
+      #splash-quest-icons svg { display: block; width: 20px; height: 20px; }
+      #splash-quest-icons svg:nth-child(1) { filter: drop-shadow(0 0 6px rgba(70,214,224,0.35)); }
+      #splash-quest-icons svg:nth-child(2) { filter: drop-shadow(0 0 8px rgba(230,196,99,0.4)); }
+      #splash-quest-icons svg:nth-child(3) { filter: drop-shadow(0 0 6px rgba(232,128,74,0.35)); }
+
+      @keyframes dotsIn { to { opacity: 1; } }
+    </style>
+  </head>
+
+  <body>
+    <div id="splash">
+      <div id="splash-inner">
+        <span class="splash-label" id="splash-left">Adventure</span>
+        <div id="splash-sword">
+          <div id="splash-burst"></div>
+          <svg id="sword-base" class="sword-layer" viewBox="0 0 32 32" fill="none" stroke-linejoin="round" color="#e8804a">
+            <path d="M16 2 L23 10 L23 17 L16 21 L9 17 L9 10 Z" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>
+            <rect x="2" y="20" width="28" height="3" rx="1" fill="currentColor" opacity="1"/>
+            <path d="M16 6 L20 11 L20 15 L16 18 L12 15 L12 11 Z" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            <path d="M16 24 L18.5 26 L16 28 L13.5 26 Z" fill="currentColor" stroke="none"/>
+            <circle cx="16" cy="30" r="1.5" fill="currentColor" stroke="none" opacity="0.6"/>
+          </svg>
+          <svg id="sword-over" class="sword-layer" viewBox="0 0 32 32" fill="none" stroke-linejoin="round" color="#46d6e0" style="clip-path: inset(0 100% 0 0);">
+            <path d="M16 2 L23 10 L23 17 L16 21 L9 17 L9 10 Z" stroke="currentColor" stroke-width="1.6" opacity="0.85"/>
+            <rect x="2" y="20" width="28" height="3" rx="1" fill="currentColor" opacity="1"/>
+            <path d="M16 6 L20 11 L20 15 L16 18 L12 15 L12 11 Z" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            <path d="M16 24 L18.5 26 L16 28 L13.5 26 Z" fill="currentColor" stroke="none"/>
+            <circle cx="16" cy="30" r="1.5" fill="currentColor" stroke="none" opacity="0.6"/>
+          </svg>
+        </div>
+        <span class="splash-label" id="splash-right">Log</span>
+        <div id="splash-quest-icons">
+          <svg viewBox="0 0 32 32" fill="none" stroke="#46d6e0" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M16 2 L30 16 L16 30 L2 16 Z" />
+            <path d="M16 9 L23 16 L16 23 L9 16 Z" fill="#46d6e0" stroke="none" opacity="0.92" />
+          </svg>
+          <svg viewBox="0 0 32 32" fill="none" stroke="#e6c463" stroke-width="1.6" stroke-linejoin="round">
+            <path d="M16 2 L30 16 L16 30 L2 16 Z" opacity="0.55" />
+            <path d="M16 9 L23 21 L9 21 Z" fill="#e6c463" stroke="none" />
+            <circle cx="16" cy="6.3" r="1.4" fill="#e6c463" stroke="none" />
+          </svg>
+          <svg viewBox="0 0 32 32" fill="none" stroke="#e8804a" stroke-width="1.6" stroke-linejoin="round">
+            <circle cx="16" cy="16" r="13" opacity="0.5" />
+            <circle cx="16" cy="16" r="5" fill="#e8804a" stroke="none" />
+            <path d="M16 3 L16 7 M16 25 L16 29 M3 16 L7 16 M25 16 L29 16" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      (function () {
+        /* ── Audio: ethereal arrival chime ── */
+        (function playArrival() {
+          try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            const ctx = new AC();
+            const master = ctx.createGain();
+            master.gain.value = 0.18;
+            master.connect(ctx.destination);
+            const rev = ctx.createConvolver();
+            const len = ctx.sampleRate * 2;
+            const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+            for (let c = 0; c < 2; c++) {
+              const d = buf.getChannelData(c);
+              for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8);
+            }
+            rev.buffer = buf;
+            const wet = ctx.createGain(); wet.gain.value = 0.35;
+            rev.connect(wet); wet.connect(master);
+            function pluck(freq, delay, vol, dur) {
+              const t = ctx.currentTime + delay;
+              const g = ctx.createGain();
+              g.gain.setValueAtTime(0.0001, t);
+              g.gain.exponentialRampToValueAtTime(vol, t + 0.012);
+              g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+              g.connect(master); g.connect(rev);
+              const o = ctx.createOscillator(); o.type = 'sine';
+              o.frequency.setValueAtTime(freq, t);
+              o.connect(g); o.start(t); o.stop(t + dur + 0.05);
+              const o2 = ctx.createOscillator(); const g2 = ctx.createGain();
+              o2.type = 'sine'; o2.frequency.setValueAtTime(freq * 2.005, t);
+              g2.gain.setValueAtTime(0.0001, t);
+              g2.gain.exponentialRampToValueAtTime(vol * 0.28, t + 0.012);
+              g2.gain.exponentialRampToValueAtTime(0.0001, t + dur * 0.65);
+              o2.connect(g2); g2.connect(master); g2.connect(rev);
+              o2.start(t); o2.stop(t + dur + 0.05);
+            }
+            pluck(329.63, 0.22, 0.38, 1.2);
+            pluck(440.00, 0.38, 0.40, 1.4);
+            pluck(523.25, 0.52, 0.42, 1.6);
+            pluck(659.25, 0.66, 0.44, 1.8);
+            pluck(880.00, 0.80, 0.46, 2.2);
+            pluck(1318.5, 0.96, 0.28, 2.8);
+          } catch (e) { /* no-op */ }
+        })();
+
+        /* ── Sword color sweep: right to left via Web Animations API ── */
+        var base = document.getElementById('sword-base');
+        var over = document.getElementById('sword-over');
+        var splash = document.getElementById('splash');
+        var colors = ['#e8804a', '#46d6e0', '#e6c463'];
+
+        function doSweep(fromIdx, toIdx, cb) {
+          var fromC = colors[fromIdx];
+          var toC = colors[toIdx];
+          base.setAttribute('color', fromC);
+          over.setAttribute('color', toC);
+          // Ensure starting state is fully hidden
+          over.style.clipPath = 'inset(0 100% 0 0)';
+          void over.offsetWidth;
+          // Animate clip-path from right-clipped to fully visible
+          var anim = over.animate(
+            [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }],
+            { duration: 1100, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', fill: 'forwards' }
+          );
+          anim.onfinish = function () {
+            over.style.clipPath = '';
+            base.setAttribute('color', toC);
+            cb();
+          };
+        }
+
+        // Sequence: ember → cyan → amber (hold 2.2s) → dismiss splash
+        setTimeout(function () {
+          doSweep(0, 1, function () {
+            doSweep(1, 2, function () {
+              setTimeout(function () {
+                splash.classList.add('fade-out');
+                document.getElementById('root')?.classList.add('ready');
+                setTimeout(function () { splash.remove(); }, 700);
+              }, 2200);
+            });
+          });
+        }, 1600);
+      })();
+    </script>
+  </body>
+</html>
