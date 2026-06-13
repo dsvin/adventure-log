@@ -19,14 +19,25 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Add x86_64 target (macOS)
+        if: runner.os == 'macOS'
+        run: rustup target add x86_64-apple-darwin
+
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build
+      - name: Build (macOS - Intel)
+        if: runner.os == 'macOS'
+        run: npm run tauri build -- --target x86_64-apple-darwin
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
         run: npm run tauri build
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
           name: adventure-log-${{ runner.os }}
-          path: src-tauri/target/release/bundle/
+          path: |
+            src-tauri/target/release/bundle/
+            src-tauri/target/x86_64-apple-darwin/release/bundle/
