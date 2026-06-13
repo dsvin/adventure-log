@@ -28,7 +28,7 @@ jobs:
           path: src-tauri/target/release/bundle/
 
   build-macos:
-    runs-on: macos-13
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -40,14 +40,22 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Add x86_64 target
+        run: rustup target add x86_64-apple-darwin
+
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build
-        run: npm run tauri build
+      - name: Build for Intel
+        env:
+          MACOSX_DEPLOYMENT_TARGET: "10.13"
+        run: npm run tauri build -- --target x86_64-apple-darwin
 
-      - name: Upload installer
+      - name: Verify architecture
+        run: file src-tauri/target/x86_64-apple-darwin/release/adventure-log
+
+      - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
           name: adventure-log-macOS
-          path: src-tauri/target/release/bundle/
+          path: src-tauri/target/x86_64-apple-darwin/release/bundle/
