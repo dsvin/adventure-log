@@ -2,12 +2,8 @@ name: Build
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -19,25 +15,39 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Add x86_64 target (macOS)
-        if: runner.os == 'macOS'
-        run: rustup target add x86_64-apple-darwin
-
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Build (macOS - Intel)
-        if: runner.os == 'macOS'
-        run: npm run tauri build -- --target x86_64-apple-darwin
-
-      - name: Build (Windows)
-        if: runner.os == 'Windows'
+      - name: Build
         run: npm run tauri build
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: adventure-log-${{ runner.os }}
-          path: |
-            src-tauri/target/release/bundle/
-            src-tauri/target/x86_64-apple-darwin/release/bundle/
+          name: adventure-log-Windows
+          path: src-tauri/target/release/bundle/
+
+  build-macos:
+    runs-on: macos-13
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run tauri build
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: adventure-log-macOS
+          path: src-tauri/target/release/bundle/
